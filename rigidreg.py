@@ -2,7 +2,7 @@
 FILE: rigidreg.py
 LAST MODIFIED: 24/05/17
 DESCRIPTION:
-Script for rigid-body registration of one model to another using ICP.
+Script for rigid-body registration of one model to another.
 
 ===============================================================================
 This file is part of GIAS2. (https://bitbucket.org/jangle/gias2)
@@ -17,13 +17,13 @@ from os import path
 import sys
 import argparse
 import numpy as np
-from scipy.spatial import cKDTree
-import copy
 import logging
+import copy
 
 from gias2.registration import alignment_fitting as AF
-from gias2.registration import RBF
 from gias2.mesh import vtktools
+
+# import pdb
 
 reg_methods = {
               'corr_r': AF.fitRigid,
@@ -70,30 +70,27 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 
     x0 = _makeX0(reg_method, source_pts, target_pts, init_trans, init_rot, init_s)
     
-    reg = reg_methods[reg_method]    
+    _reg = reg_methods[reg_method]    
     if x0 is None:
-        T, source_pts_reg, (rmse0, RMSE) = reg(
+        T, source_pts_reg, (rmse0, RMSE) = _reg(
             source_pts, target_pts, xtol=xtol, sample=samples, outputErrors=True
             )
     else:
-        T, source_pts_reg, (rmse0, RMSE) = reg(
+        T, source_pts_reg, (rmse0, RMSE) = _reg(
             source_pts, target_pts, t0=x0, xtol=xtol, sample=samples,
             outputErrors=True
             )
     
     #=============================================================#
     # create regstered mesh
-    if not pts_only:
+    if pts_only:
+        reg = source_pts_reg
+    else:
         reg = copy.deepcopy(source)
         reg.v = source_pts_reg
-    else:
-        reg = source_pts_reg  
 
     if out:
-        if not pts_only:
-            writer = vtktools.Writer(v=reg.v, f=reg.f)
-            writer.write(args.out)
-        else:
+        if pts_only:
             n = np.arange(1,len(source_pts_reg)+1)
             _out = np.hstack([n[:,np.newaxis], source_pts_reg])
             np.savetxt(
@@ -101,6 +98,9 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
                 fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
                 header='rigid-body registered points'
                 )
+        else:
+            writer = vtktools.Writer(v=reg.v, f=reg.f)
+            writer.write(args.out)
 
     #=============================================================#
     # view
@@ -130,6 +130,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
     return reg, RMSE
 
 def main(args):
+    print('{} to {}'.format(args.source,args.target))
     if args.points_only:
         source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
     else:
@@ -141,15 +142,18 @@ def main(args):
         target = vtktools.loadpoly(args.target)
     
     reg, rms = register(
-        args.reg_method, source, target, args.init_trans, args.init_rot, args.init_scale,
-        xtol=1e-3, samples=10000, pts_only=args.points_only, out=args.out, view=args.view,
+        args.reg_method, source, target, args.t0, args.r0, args.s0,
+        xtol=1e-3, samples=10000, pts_only=args.points_only, out=args.out,
+        view=args.view,
         )
 
     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms))
 
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='Rigid-body registration of one model to another.')
+    parser = argparse.ArgumentParser(
+        description='Rigid-body registration of one model to another.'
+        )
     parser.add_argument(
         'reg_method',
         choices=[
@@ -180,8 +184,8 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         )
     parser.add_argument(
         '-p', '--points-only',
-        action='store_true',
-        help='Model are point clouds only. Expected file format is 1 header line, then n,x,y,z on each line after'
+        help='''Model are point clouds only. Expected file format is 1 header 
+line, then n,x,y,z on each line after. UNTESTED'''
         )
     parser.add_argument(
         '--t0', nargs=3, type=float, default=None,
@@ -197,11 +201,16 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         )
     parser.add_argument(
         '-b', '--batch',
-        help='file path of a list of model paths to fit. 1st model on list will be the source.'
+        help='file path of a list of model paths to fit. 1st model on list will be the target.'
         )
     parser.add_argument(
         '-d', '--outdir',
         help='directory path of the output registered models when using batch mode.'
+        )
+    parser.add_argument(
+        '--outext',
+        choices=('.obj', '.wrl', '.stl', '.ply', '.vtp'),
+        help='output file extension. Ignored if --out is given, useful in batch mode.'
         )
     parser.add_argument(
         '-v', '--view',
@@ -237,6 +246,8 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         for i, mp in enumerate(model_paths[1:]):
             args.source = mp
             _p, _ext = path.splitext(path.split(mp)[1])
+            if args.outext is not None:
+                _ext = args.outext
             args.out = path.join(out_dir, _p+'_rigidreg'+_ext)
             main(args)
 
