@@ -21,7 +21,7 @@ from scipy.spatial import cKDTree
 import copy
 import logging
 
-from gias2.registration import alignment_fitting as af
+from gias2.registration import alignment_fitting as AF
 from gias2.registration import RBF
 from gias2.mesh import vtktools
 
@@ -69,7 +69,6 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
         target_pts = target.v
 
     x0 = _makeX0(reg_method, source_pts, target_pts, init_trans, init_rot, init_s)
-    print 'T0:', x0
     
     reg = reg_methods[reg_method]    
     if x0 is None:
@@ -81,28 +80,26 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
             source_pts, target_pts, t0=x0, xtol=xtol, sample=samples,
             outputErrors=True
             )
-
-    print 'Registered...'
-    print 'RMSE:', RMSE
-    print 'T:', T
     
     #=============================================================#
     # create regstered mesh
     if not pts_only:
         reg = copy.deepcopy(source)
         reg.v = source_pts_reg
+    else:
+        reg = source_pts_reg  
 
     if out:
         if not pts_only:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
             writer.write(args.out)
         else:
-            n = np.arange(1,len(source_pts_reg))
+            n = np.arange(1,len(source_pts_reg)+1)
             _out = np.hstack([n[:,np.newaxis], source_pts_reg])
             np.savetxt(
                 args.out, _out, delimiter=',',
                 fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
-                header='# rigid-body registered points'
+                header='rigid-body registered points'
                 )
 
     #=============================================================#
@@ -130,7 +127,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
         else:
             print('Visualisation error: cannot import mayavi')
 
-    return source_pts_aligned, RMSE
+    return reg, RMSE
 
 def main(args):
     if args.points_only:
@@ -154,7 +151,7 @@ def main(args):
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Rigid-body registration of one model to another.')
     parser.add_argument(
-        'reg-method',
+        'reg_method',
         choices=[
             'corr_r', 'corr_rs', 'corr_a',
             'icp_r_st', 'icp_r_ts', 'icp_rs_st', 'icp_rs_ts',
@@ -183,6 +180,7 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         )
     parser.add_argument(
         '-p', '--points-only',
+        action='store_true',
         help='Model are point clouds only. Expected file format is 1 header line, then n,x,y,z on each line after'
         )
     parser.add_argument(
@@ -234,10 +232,10 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         main(args)
     else:
         model_paths = np.loadtxt(args.batch, dtype=str)
-        args.source = model_paths[0]
+        args.target = model_paths[0]
         out_dir = args.outdir
         for i, mp in enumerate(model_paths[1:]):
-            args.target = mp
+            args.source = mp
             _p, _ext = path.splitext(path.split(mp)[1])
             args.out = path.join(out_dir, _p+'_rigidreg'+_ext)
             main(args)
