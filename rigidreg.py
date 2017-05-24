@@ -91,12 +91,9 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 
     if out:
         if pts_only:
-            n = np.arange(1,len(source_pts_reg)+1)
-            _out = np.hstack([n[:,np.newaxis], source_pts_reg])
             np.savetxt(
-                args.out, _out, delimiter=',',
-                fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
-                header='rigid-body registered points'
+                args.out, reg, delimiter=',',
+                fmt=['%10.6f', '%10.6f', '%10.6f'],
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
@@ -116,7 +113,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
             if pts_only:
                 v.addData('target points', target_pts, renderArgs={'mode':'point', 'color':(1,0,0)})
                 v.addData('source points', source_pts, renderArgs={'mode':'point', 'color':(0,1,0)})
-                v.addData('registered points', source_pts_reg, renderArgs={'mode':'point', 'color':(0.3,0.3,1)})
+                v.addData('registered points', reg, renderArgs={'mode':'point', 'color':(0.3,0.3,1)})
             else:
                 v.addTri('target', target, renderArgs={'color':(1,0,0)})
                 v.addTri('source', source, renderArgs={'color':(0,1,0)})
@@ -132,12 +129,12 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 def main(args):
     print('{} to {}'.format(args.source,args.target))
     if args.points_only:
-        source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
+        source = np.loadtxt(args.source)
     else:
         source = vtktools.loadpoly(args.source)
     
     if args.points_only:
-        target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
+        target = np.loadtxt(args.target)
     else:
         target = vtktools.loadpoly(args.target)
     
@@ -184,8 +181,8 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         )
     parser.add_argument(
         '-p', '--points-only',
-        help='''Model are point clouds only. Expected file format is 1 header 
-line, then n,x,y,z on each line after. UNTESTED'''
+        action='store_true',
+        help='Model are point clouds only. Expected file format is x,y,z on each line.'
         )
     parser.add_argument(
         '--t0', nargs=3, type=float, default=None,
