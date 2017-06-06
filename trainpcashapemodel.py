@@ -74,7 +74,9 @@ def main(args):
     if args.pc_path is None:
         pca = PCA.PCA()
         pca.setData(X)
-        pca.inc_svd_decompose(args.ncomponents)
+        print('data shape: {}'.format(X.shape))
+        # pca.inc_svd_decompose(args.ncomponents)
+        pca.svd_decompose()
         pc = pca.PC
     else:
         pc = PCA.loadPrincipalComponents(args.pc_path)
@@ -91,12 +93,13 @@ def main(args):
                 )
 
     # reconstruct modal models
-    for mi in args.recon_modes:
-        xr1, xr2 = recon_data(pc, mi, 2.0)
-        mr1 = recon_model(xr1, args.points_only, models[0])
-        mr2 = recon_model(xr2, args.points_only, models[0])
-        save_model(mr1, args.out+'_recon_pc{}{}'.format(mi, 'p2')+model_ext, args.points_only)
-        save_model(mr2, args.out+'_recon_pc{}{}'.format(mi, 'm2')+model_ext, args.points_only)
+    if args.recon_modes is not None:
+        for mi in args.recon_modes:
+            xr1, xr2 = recon_data(pc, mi, 2.0)
+            mr1 = recon_model(xr1, args.points_only, models[0])
+            mr2 = recon_model(xr2, args.points_only, models[0])
+            save_model(mr1, args.out+'_recon_pc{}{}'.format(mi, 'p2')+model_ext, args.points_only)
+            save_model(mr2, args.out+'_recon_pc{}{}'.format(mi, 'm2')+model_ext, args.points_only)
 
     # visualise
     componentVar = pc.getNormSpectrum()
