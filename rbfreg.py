@@ -221,7 +221,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
         model_paths = np.loadtxt(args.batch, dtype=str)
         args.source = model_paths[0]
         out_dir = args.outdir
-        for i, mp in enumerate(model_paths[1:]):
+        for i, mp in enumerate(model_paths):
             args.target = mp
             _p, _ext = path.splitext(path.split(mp)[1])
             if args.outext is not None:

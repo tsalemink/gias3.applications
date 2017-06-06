@@ -240,13 +240,17 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
         model_paths = np.loadtxt(args.batch, dtype=str)
         args.target = model_paths[0]
         out_dir = args.outdir
-        for i, mp in enumerate(model_paths[1:]):
+        for i, mp in enumerate(model_paths):
             args.source = mp
             _p, _ext = path.splitext(path.split(mp)[1])
             if args.outext is not None:
                 _ext = args.outext
             args.out = path.join(out_dir, _p+'_rigidreg'+_ext)
             main(args)
+            # if i==0:
+                # main(args, pass_thru=True)
+            # else:
+                # main(args)
 
 
 

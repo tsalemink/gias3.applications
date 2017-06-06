@@ -105,7 +105,10 @@ def main(args):
     componentVar = pc.getNormSpectrum()
     print('PC Percentage Significance')
     for i in range(args.plot_pcs):
-        print('pc%d: %4.2f%%'%(i+1, componentVar[i]*100))
+        try:
+            print('pc%d: %4.2f%%'%(i+1, componentVar[i]*100))
+        except IndexError:
+            pass
 
     if args.view:
         PCA.plotSpectrum(pc, args.plot_pcs, title='Mode Variance')
