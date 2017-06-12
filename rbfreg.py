@@ -157,6 +157,46 @@ def main_2_pass(args):
 
     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms2))
 
+def main_n_pass(args):
+    print('RBF Registering {} to {}'.format(args.source,args.target))
+    if args.points_only:
+        source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
+    else:
+        source = vtktools.loadpoly(args.source)
+    
+    if args.points_only:
+        target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
+    else:
+        target = vtktools.loadpoly(args.target)
+    
+    init_rot = np.deg2rad((0,0,0))
+
+    # TODO
+    rbfargs = load_rbf_config(args.rbfconfig)
+    n_iterations = len(rbfargs)
+
+    for it, rbfargs_i in enumerate(rbfargs):
+        logging.info('Iteration {}'.format(it+1))
+        if it==(n_iterations-1):
+            reg_i, rms_i = register(source, target, init_rot, pts_only=args.points_only,
+                out=args.out, view=args.view, **rbfargs_i
+                )
+        else:
+            reg_i, rms_i = register(source, target, init_rot, pts_only=args.points_only,
+                out=False, view=False, **rbfargs_i
+                )
+
+        source = reg_i
+
+    logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms_i))
+
+def _load_rbf_config(fname):
+    """
+    Load the rbf registration config file
+    """
+
+    # TODO
+    return
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Register one point cloud to another.')
@@ -228,3 +268,4 @@ line, then n,x,y,z on each line after. UNTESTED'''
                 _ext = args.outext
             args.out = path.join(out_dir, _p+'_rbfreg'+_ext)
             main_2_pass(args)
+            # main_n_pass(args)
