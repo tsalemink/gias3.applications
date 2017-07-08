@@ -75,8 +75,12 @@ def main(args):
         pca = PCA.PCA()
         pca.setData(X)
         print('data shape: {}'.format(X.shape))
-        # pca.inc_svd_decompose(args.ncomponents)
-        pca.svd_decompose()
+
+        if args.ncomponents:
+            pca.inc_svd_decompose(args.ncomponents)
+        else:
+            pca.svd_decompose()
+
         pc = pca.PC
     else:
         pc = PCA.loadPrincipalComponents(args.pc_path)
@@ -133,6 +137,8 @@ def main(args):
         else:
             print('Visualisation error: cannot import mayavi')
 
+    return pc
+
 #=============================================================================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -143,7 +149,8 @@ if __name__ == '__main__':
         )
     parser.add_argument(
         '-n', '--ncomponents',
-        default=10,
+        default=None,
+        type=int,
         help='Number of PCs to find if using incremental PCA.'
         )
     parser.add_argument(
@@ -178,4 +185,4 @@ if __name__ == '__main__':
         )
     args = parser.parse_args()
 
-    main(args)
+    pc = main(args)
