@@ -224,7 +224,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
         )
     parser.add_argument(
         '-d', '--outdir',
-        help='direcotry path of the output registered models when using batch mode.'
+        help='directory path of the output registered models when using batch mode.'
         )
     parser.add_argument(
         '--outext',
