@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 FILE: trainpcashapemodel.py
 LAST MODIFIED: 24/05/17
@@ -47,7 +47,7 @@ def save_model(x, file, points_only, header=None):
         writer = vtktools.Writer(v=x.v, f=x.f)
         writer.write(file)
 
-def main(args):
+def do_pca(args):
     paths = np.loadtxt(args.path_file, dtype=str, delimiter=',')
     model_ext = path.splitext(paths[0])[1]
 
@@ -141,7 +141,7 @@ def main(args):
     return pc
 
 #=============================================================================#
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         description='Run PCA on a set of shapes.')
     parser.add_argument(
@@ -186,4 +186,7 @@ if __name__ == '__main__':
         )
     args = parser.parse_args()
 
-    pc = main(args)
+    pc = do_pca(args)
+
+if __name__ == '__main__':
+    main()

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 FILE: rbfreg.py
 LAST MODIFIED: 23/05/17
@@ -85,7 +85,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
-            writer.write(args.out)
+            writer.write(out)
 
     #=============================================================#
     # view
@@ -199,7 +199,7 @@ def _load_rbf_config(fname):
     # TODO
     return
 
-if __name__=='__main__':
+def main():
     parser = argparse.ArgumentParser(description='Register one point cloud to another.')
     parser.add_argument(
         '-s', '--source',
@@ -270,3 +270,6 @@ line, then n,x,y,z on each line after. UNTESTED'''
             args.out = path.join(out_dir, _p+'_rbfreg'+_ext)
             main_2_pass(args)
             # main_n_pass(args)
+
+if __name__=='__main__':
+    main()

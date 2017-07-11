@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 FILE: rigidreg.py
 LAST MODIFIED: 24/05/17
@@ -98,7 +98,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
-            writer.write(args.out)
+            writer.write(out)
 
     #=============================================================#
     # view
@@ -127,7 +127,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 
     return reg, RMSE
 
-def main(args):
+def register_pair(args):
     print('{} to {}'.format(args.source,args.target))
     if args.points_only:
         source = np.loadtxt(args.source)
@@ -147,8 +147,7 @@ def main(args):
 
     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms))
 
-
-if __name__=='__main__':
+def main():
     parser = argparse.ArgumentParser(
         description='Rigid-body registration of one model to another.'
         )
@@ -236,7 +235,7 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
             )
 
     if args.batch is None:
-        main(args)
+        register_pair(args)
     else:
         model_paths = np.loadtxt(args.batch, dtype=str)
         args.target = model_paths[0]
@@ -247,14 +246,11 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
             if args.outext is not None:
                 _ext = args.outext
             args.out = path.join(out_dir, _p+'_rigidreg'+_ext)
-            main(args)
+            register_pair(args)
             # if i==0:
                 # main(args, pass_thru=True)
             # else:
                 # main(args)
 
-
-
-                
-
-
+if __name__=='__main__':
+    main()
