@@ -92,6 +92,7 @@ def do_pca(args):
     if args.out:
         if args.pc_path is None:
             pc.save(args.out)
+            pc.savemat(args.out)
             save_model(
                 mean_model, args.out+'_mean'+model_ext, args.points_only,
                 'mean model'
