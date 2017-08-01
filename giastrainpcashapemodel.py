@@ -98,6 +98,7 @@ def do_pca(args):
                 )
 
     # reconstruct modal models
+    recon_models = []
     if args.recon_modes is not None:
         for mi in args.recon_modes:
             xr1, xr2 = recon_data(pc, mi, 2.0)
@@ -105,6 +106,7 @@ def do_pca(args):
             mr2 = recon_model(xr2, args.points_only, models[0])
             save_model(mr1, args.out+'_recon_pc{}{}'.format(mi, 'p2')+model_ext, args.points_only)
             save_model(mr2, args.out+'_recon_pc{}{}'.format(mi, 'm2')+model_ext, args.points_only)
+            recon_models.append((mr1, mr2))
 
     # visualise
     componentVar = pc.getNormSpectrum()
@@ -129,11 +131,39 @@ def do_pca(args):
             v = fieldvi.Fieldvi()
             v.addPC('principal components', pc)
             if args.points_only:
-                v.addData('mean', mean_model, renderArgs={'mode':'point', 'color':(1,0,0)})
+                v.addData(
+                    'mean', mean_model,
+                    renderArgs={'mode':'point', 'color':tuple(args.colour)}
+                    )
             else:
-                v.addTri('mean', mean_model, renderArgs={'color':(1,0,0)})
+                v.addTri(
+                    'mean', mean_model,
+                    renderArgs={'color':tuple(args.colour)}
+                    )
 
-            v.scene.background=(0,0,0)
+            recon_opa = 0.5
+            if args.recon_modes is not None:
+                for mi in args.recon_modes:
+                    if args.points_only:
+                        v.addData(
+                            'pc{} +2sd'.format(mi), recon_models[mi][0],
+                            renderArgs={'mode':'point', 'color':tuple(args.recon_colour_1), 'opacity':args.recon_opacity}
+                            )
+                        v.addData(
+                            'pc{} -2sd'.format(mi), recon_models[mi][1],
+                            renderArgs={'mode':'point', 'color':tuple(args.recon_colour_2), 'opacity':args.recon_opacity}
+                            )
+                    else:
+                        v.addTri(
+                            'pc{} +2sd'.format(mi), recon_models[mi][0],
+                            renderArgs={'color':tuple(args.recon_colour_1), 'opacity':args.recon_opacity}
+                            )
+                        v.addTri(
+                            'pc{} -2sd'.format(mi), recon_models[mi][1],
+                            renderArgs={'color':tuple(args.recon_colour_2), 'opacity':args.recon_opacity}
+                            )
+
+            v.scene.background=tuple(args.bgcolour)
             v.configure_traits()
         else:
             print('Visualisation error: cannot import mayavi')
@@ -172,6 +202,31 @@ def main():
     parser.add_argument(
         '-o', '--out',
         help='file path of the output pca file.'
+        )
+    parser.add_argument(
+        '-c', '--colour',
+        nargs=3, type=float, default=[0.85, 0.8, 0.5],
+        help='Colour of the main model. 3 values between 0 and 1 representing RGB values.'
+        )
+    parser.add_argument(
+        '--recon-colour-1',
+        nargs=3, type=float, default=[0.9, 0.5, 0.5],
+        help='Colour of the main model. 3 values between 0 and 1 representing RGB values.'
+        )
+    parser.add_argument(
+        '--recon-colour-2',
+        nargs=3, type=float, default=[0.5, 0.5, 0.9],
+        help='Colour of the main model. 3 values between 0 and 1 representing RGB values.'
+        )
+    parser.add_argument(
+        '--bgcolour',
+        nargs=3, type=float, default=[1.0, 1.0, 1.0],
+        help='Colour of the background. 3 values between 0 and 1 representing RGB values.'
+        )
+    parser.add_argument(
+        '--recon-opacity',
+        type=float, default=0.5,
+        help='Opacity of reconstructions.'
         )
     parser.add_argument(
         '-v', '--view',
