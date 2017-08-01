@@ -81,7 +81,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
             np.savetxt(
                 args.out, _out, delimiter=',',
                 fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
-                header='# rigid-body registered points'
+                header='# rbf registered points'
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
@@ -200,7 +200,7 @@ def _load_rbf_config(fname):
     return
 
 def main():
-    parser = argparse.ArgumentParser(description='Register one point cloud to another.')
+    parser = argparse.ArgumentParser(description='Non-rigid registration using a radial basis function.')
     parser.add_argument(
         '-s', '--source',
         help='file path of the source model.'
