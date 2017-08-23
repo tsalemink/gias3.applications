@@ -114,7 +114,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
         else:
             print('Visualisation error: cannot import mayavi')
 
-    return reg, regRms
+    return reg, regRms, regRcf
 
 def main_2_pass(args):
     print('{} to {}'.format(args.source,args.target))
@@ -139,7 +139,7 @@ def main_2_pass(args):
         'maxKnots': 500,
         'minKnotDist': 10.0,
     }
-    reg_1, rms1 = register(source, target, init_rot, pts_only=args.points_only,
+    reg_1, rms1, rcf1 = register(source, target, init_rot, pts_only=args.points_only,
         out=False, view=False, **rbfargs1
         )
 
@@ -152,7 +152,7 @@ def main_2_pass(args):
         'maxKnots': 1000,
         'minKnotDist': 2.5,
     }
-    reg_2, rms2 = register(reg_1, target, init_rot, pts_only=args.points_only,
+    reg_2, rms2, rcf2 = register(reg_1, target, init_rot, pts_only=args.points_only,
         out=args.out, view=args.view, **rbfargs2
         )
 
@@ -179,11 +179,11 @@ def main_n_pass(args):
     for it, rbfargs_i in enumerate(rbfargs):
         logging.info('Iteration {}'.format(it+1))
         if it==(n_iterations-1):
-            reg_i, rms_i = register(source, target, init_rot, pts_only=args.points_only,
+            reg_i, rms_i, rcf_i = register(source, target, init_rot, pts_only=args.points_only,
                 out=args.out, view=args.view, **rbfargs_i
                 )
         else:
-            reg_i, rms_i = register(source, target, init_rot, pts_only=args.points_only,
+            reg_i, rms_i, rcf_i = register(source, target, init_rot, pts_only=args.points_only,
                 out=False, view=False, **rbfargs_i
                 )
 
