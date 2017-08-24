@@ -99,9 +99,9 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
         if has_mayavi:
             v = fieldvi.Fieldvi()
             if pts_only:
-                v.addData('target', target, renderArgs={'color':(1,0,0)})
-                v.addData('source', source, renderArgs={'color':(0,1,0)})
-                v.addData('source morphed', reg, renderArgs={'color':(0.3,0.3,1)})
+                v.addData('target', target, renderArgs={'color':(1,0,0), 'mode':'point'})
+                v.addData('source', source, renderArgs={'color':(0,1,0), 'mode':'point'})
+                v.addData('source morphed', reg, renderArgs={'color':(0.3,0.3,1), 'mode':'point'})
             else:
                 v.addTri('target', target, renderArgs={'color':(1,0,0)})
                 v.addTri('source', source, renderArgs={'color':(0,1,0)})
