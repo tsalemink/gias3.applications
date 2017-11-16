@@ -120,7 +120,7 @@ def do_pca(args):
 
     if args.view:
         PCA.plotSpectrum(pc, args.plot_pcs, title='Mode Variance')
-        PCA.plotModeScatter(pc, title='Shape space (modes 0 and 1)')
+        PCA.plotModeScatter(pc, title='Shape space (modes 0 and 1)', pointLabels=3)
 
         try:
             from gias2.visualisation import fieldvi
