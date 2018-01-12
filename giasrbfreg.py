@@ -63,6 +63,12 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
     source_points_reg3, regRms, regRcf, regHist = RBF.rbfRegIterative(
         source_points_reg2, target_points, **rbfregargs
         )
+    # source_points_reg3, regRms, regRcf, regHist = RBF.rbfRegIterative2(
+    #     source_points_reg2, target_points, **rbfregargs
+    #     )
+    # source_points_reg3, regRms, regRcf, regHist = RBF.rbfRegIterative3(
+    #     source_points_reg2, target_points, **rbfregargs
+    #     )
 
     knots = regRcf.C
 
@@ -138,6 +144,7 @@ def main_2_pass(args):
         'maxIt': 20,
         'maxKnots': 500,
         'minKnotDist': 10.0,
+        'maxKnotsPerIt': 20,
     }
     reg_1, rms1, rcf1 = register(source, target, init_rot, pts_only=args.points_only,
         out=False, view=False, **rbfargs1
@@ -151,12 +158,15 @@ def main_2_pass(args):
         'maxIt': 20,
         'maxKnots': 1000,
         'minKnotDist': 2.5,
+        'maxKnotsPerIt': 20,
     }
     reg_2, rms2, rcf2 = register(reg_1, target, init_rot, pts_only=args.points_only,
         out=args.out, view=args.view, **rbfargs2
         )
 
     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms2))
+
+    return source, target, (reg_1, rms1, rcf1), (reg_2, rms2, rcf2)
 
 def main_n_pass(args):
     print('RBF Registering {} to {}'.format(args.source,args.target))
