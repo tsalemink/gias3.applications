@@ -175,7 +175,7 @@ def reg_batch(args):
         if args.outext is not None:
             _ext = args.outext
         args.out = path.join(out_dir, _p+'_ssmreg'+_ext)
-        main_single(args, mean, ssm)
+        reg_single(args, mean, ssm)
 
 def main():
     parser = argparse.ArgumentParser(description='Non-rigid registration using a PCA shape model.')
