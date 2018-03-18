@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-FILE: rbfreg.py
-LAST MODIFIED: 23/05/17
+FILE: giasrbfreg.py
+LAST MODIFIED: 19/03/18
 DESCRIPTION:
 Script for registering one model to another using RBFs.
 

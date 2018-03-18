@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-FILE: trainpcashapemodel.py
-LAST MODIFIED: 24/05/17
+FILE: giastrainpcashapemodel.py
+LAST MODIFIED: 19/03/18
 DESCRIPTION:
 Script for performing PCA on a set of shapes.
 

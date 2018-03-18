@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-FILE: rigidreg.py
-LAST MODIFIED: 24/05/17
+FILE: giasrigidreg.py
+LAST MODIFIED: 19/03/18
 DESCRIPTION:
 Script for rigid-body registration of one model to another.
 

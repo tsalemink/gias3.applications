@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-FILE: pcreg.py
-LAST MODIFIED: 17/03/18
+FILE: giashmfinp2surf.py
+LAST MODIFIED: 19/03/18
 DESCRIPTION:
 Host-mesh fitting to register a source surface to a target surface and apply
 the transformation the source volumetric INP mesh.

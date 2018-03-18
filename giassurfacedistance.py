@@ -1,9 +1,8 @@
+#!/usr/bin/env python
 """
-giassurfacedistance.py
-==============================
-Author: Ju Zhang
-Last Modified: 2017-08-02
-
+FILE: giassurfacedistance.py
+LAST MODIFIED: 19/03/18
+DESCRIPTION:
 Script for calculating the distances between 2 surfaces.
 
 ===============================================================================
