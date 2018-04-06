@@ -17,6 +17,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from os import path
 import sys
 import argparse
+import configparser
 import numpy as np
 from scipy.spatial import cKDTree
 import copy
@@ -122,53 +123,53 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
 
     return reg, regRms, regRcf
 
-def main_2_pass(args):
-    print('{} to {}'.format(args.source,args.target))
-    if args.points_only:
-        source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
-    else:
-        source = vtktools.loadpoly(args.source)
+# def register_2_pass(args):
+#     print('RBF Registering {} to {}'.format(args.source,args.target))
+#     if args.points_only:
+#         source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
+#     else:
+#         source = vtktools.loadpoly(args.source)
     
-    if args.points_only:
-        target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
-    else:
-        target = vtktools.loadpoly(args.target)
+#     if args.points_only:
+#         target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
+#     else:
+#         target = vtktools.loadpoly(args.target)
     
-    init_rot = np.deg2rad((0,0,0))
+#     init_rot = np.deg2rad((0,0,0))
 
-    rbfargs1 = {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s':1.0, 'scaling':1000.0},
-        'distmode': 'alt',
-        'xtol': 1e-1,
-        'maxIt': 20,
-        'maxKnots': 500,
-        'minKnotDist': 10.0,
-        'maxKnotsPerIt': 20,
-    }
-    reg_1, rms1, rcf1 = register(source, target, init_rot, pts_only=args.points_only,
-        out=False, view=False, **rbfargs1
-        )
+#     rbfargs1 = {
+#         'basisType': 'gaussianNonUniformWidth',
+#         'basisArgs': {'s':1.0, 'scaling':1000.0},
+#         'distmode': 'alt',
+#         'xtol': 1e-1,
+#         'maxIt': 20,
+#         'maxKnots': 500,
+#         'minKnotDist': 20.0,
+#         'maxKnotsPerIt': 20,
+#     }
+#     reg_1, rms1, rcf1 = register(source, target, init_rot, pts_only=args.points_only,
+#         out=False, view=False, **rbfargs1
+#         )
 
-    rbfargs2 = {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s':1.0, 'scaling':10.0},
-        'distmode': 'alt',
-        'xtol': 1e-2,
-        'maxIt': 20,
-        'maxKnots': 1000,
-        'minKnotDist': 2.5,
-        'maxKnotsPerIt': 20,
-    }
-    reg_2, rms2, rcf2 = register(reg_1, target, init_rot, pts_only=args.points_only,
-        out=args.out, view=args.view, **rbfargs2
-        )
+#     rbfargs2 = {
+#         'basisType': 'gaussianNonUniformWidth',
+#         'basisArgs': {'s':1.0, 'scaling':10.0},
+#         'distmode': 'alt',
+#         'xtol': 1e-3,
+#         'maxIt': 20,
+#         'maxKnots': 1000,
+#         'minKnotDist': 2.5,
+#         'maxKnotsPerIt': 20,
+#     }
+#     reg_2, rms2, rcf2 = register(reg_1, target, init_rot, pts_only=args.points_only,
+#         out=args.out, view=args.view, **rbfargs2
+#         )
 
-    logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms2))
+#     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms2))
 
-    return source, target, (reg_1, rms1, rcf1), (reg_2, rms2, rcf2)
+#     return source, target, (reg_1, rms1, rcf1), (reg_2, rms2, rcf2)
 
-def main_n_pass(args):
+def register_n_pass(args):
     print('RBF Registering {} to {}'.format(args.source,args.target))
     if args.points_only:
         source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
@@ -182,32 +183,80 @@ def main_n_pass(args):
     
     init_rot = np.deg2rad((0,0,0))
 
-    # TODO
-    rbfargs = load_rbf_config(args.rbfconfig)
+    rbfargs = parse_config(args.config)
     n_iterations = len(rbfargs)
-
+    _source = source
     for it, rbfargs_i in enumerate(rbfargs):
-        logging.info('Iteration {}'.format(it+1))
-        if it==(n_iterations-1):
-            reg_i, rms_i, rcf_i = register(source, target, init_rot, pts_only=args.points_only,
-                out=args.out, view=args.view, **rbfargs_i
-                )
-        else:
+        logging.info('Registration pass {}'.format(it+1))
+        if it!=(n_iterations-1):
             reg_i, rms_i, rcf_i = register(source, target, init_rot, pts_only=args.points_only,
                 out=False, view=False, **rbfargs_i
+                )
+        else:
+            # last iteration
+            reg_i, rms_i, rcf_i = register(source, target, init_rot, pts_only=args.points_only,
+                out=args.out, view=args.view, **rbfargs_i
                 )
 
         source = reg_i
 
     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms_i))
 
-def _load_rbf_config(fname):
-    """
-    Load the rbf registration config file
-    """
+    return source, target, (reg_i, rms_i, rcf_i)
 
-    # TODO
-    return
+# DEFAULT 2 pass parameters
+DEFAULT_PARAMS = [
+    {
+        'basisType': 'gaussianNonUniformWidth',
+        'basisArgs': {'s':1.0, 'scaling':1000.0},
+        'distmode': 'alt',
+        'xtol': 1e-1,
+        'maxIt': 20,
+        'maxKnots': 500,
+        'minKnotDist': 20.0,
+        'maxKnotsPerIt': 20,
+    },
+    {
+        'basisType': 'gaussianNonUniformWidth',
+        'basisArgs': {'s':1.0, 'scaling':10.0},
+        'distmode': 'alt',
+        'xtol': 1e-3,
+        'maxIt': 20,
+        'maxKnots': 1000,
+        'minKnotDist': 2.5,
+        'maxKnotsPerIt': 20,
+    }
+    ]
+
+def parse_config(fname):
+
+    if fname is None:
+        return DEFAULT_PARAMS
+
+    cfg = configparser.ConfigParser()
+    cfg.read(fname)
+
+    n_passes = cfg.getint('main', 'n_passes')
+
+    params = []
+    for _pass in range(1, n_passes+1):
+        sec = 'pass_{:d}'.format(_pass)
+        pass_params = {
+            'basisType': cfg.get(sec, 'basis_type'),
+            'basisArgs': {
+                's': 1.0,
+                'scaling': cfg.getfloat(sec, 'basis_scaling')
+                },
+            'distmode': cfg.get(sec, 'dist_mode'),
+            'xtol': cfg.getfloat(sec, 'xtol'),
+            'maxIt': cfg.getint(sec, 'max_it'),
+            'maxKnots': cfg.getint(sec, 'max_knots'),
+            'minKnotDist': cfg.getfloat(sec, 'min_knot_dist'),
+            'maxKnotsPerIt': cfg.getint(sec, 'max_knots_per_it'),
+        }
+        params.append(pass_params)
+
+    return params
 
 def main():
     parser = argparse.ArgumentParser(description='Non-rigid registration using a radial basis function.')
@@ -222,6 +271,11 @@ def main():
     parser.add_argument(
         '-o', '--out',
         help='file path of the output registered model.'
+        )
+    parser.add_argument(
+        '-c', '--config',
+        default=None,
+        help='file path of a configuration file for rbf registration pass parameters. See examples/rbfreg-params.ini for an example config file.'
         )
     parser.add_argument(
         '-p', '--points-only',
@@ -267,7 +321,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
             )
 
     if args.batch is None:
-        main_2_pass(args)
+        register_n_pass(args)
     else:
         model_paths = np.loadtxt(args.batch, dtype=str)
         args.source = model_paths[0]
@@ -278,8 +332,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
             if args.outext is not None:
                 _ext = args.outext
             args.out = path.join(out_dir, _p+'_rbfreg'+_ext)
-            main_2_pass(args)
-            # main_n_pass(args)
+            register_n_pass(args)
 
 if __name__=='__main__':
     main()
