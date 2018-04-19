@@ -45,14 +45,11 @@ import os
 import sys
 import argparse
 
-os.environ['ETS_TOOLKIT'] = 'qt4'
-
 import numpy as np
 from scipy.spatial import cKDTree
 from gias2.fieldwork.field.tools import fitting_tools
 from gias2.fieldwork.field import geometric_field_fitter as GFF
 from gias2.fieldwork.field import geometric_field
-from gias2.visualisation import fieldvi
 from gias2.mesh import vtktools, inp
 from gias2.common import transform3D
 from gias2.registration import alignment_fitting as af
@@ -251,16 +248,26 @@ def main():
     #=============================================================#
     # view
     if args.view:
-        v = fieldvi.Fieldvi()
-        v.addData('target surface', target_surf_points, renderArgs={'mode':'point', 'color':(1,0,0)})
-        v.addData('source surface', source_surf_points, renderArgs={'mode':'point'})
-        v.addData('source surface reg1', source_surf_points_reg1, renderArgs={'mode':'point'})
-        v.addData('source surface reg2', source_surf_points_reg2, renderArgs={'mode':'point'})
-        v.addData('source surface hmf', source_surf_points_hmf, renderArgs={'mode':'point'})
-        v.addData('source nodes hmf', source_mesh.nodes, renderArgs={'mode':'point'})
+        os.environ['ETS_TOOLKIT'] = 'qt4'
+        try:
+            from gias2.visualisation import fieldvi
+            has_mayavi = True
+        except ImportError:
+            has_mayavi = False
 
-        v.configure_traits()
-        v.scene.background=(0,0,0)
+        if has_mayavi:
+            v = fieldvi.Fieldvi()
+            v.addData('target surface', target_surf_points, renderArgs={'mode':'point', 'color':(1,0,0)})
+            v.addData('source surface', source_surf_points, renderArgs={'mode':'point'})
+            v.addData('source surface reg1', source_surf_points_reg1, renderArgs={'mode':'point'})
+            v.addData('source surface reg2', source_surf_points_reg2, renderArgs={'mode':'point'})
+            v.addData('source surface hmf', source_surf_points_hmf, renderArgs={'mode':'point'})
+            v.addData('source nodes hmf', source_mesh.nodes, renderArgs={'mode':'point'})
+
+            v.configure_traits()
+            v.scene.background=(0,0,0)
+        else:
+            print('Visualisation error: cannot import mayavi')
 
     #======================================================================#
     # write out INP file
