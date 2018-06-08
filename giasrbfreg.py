@@ -117,7 +117,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
             v.addData('source points reg 2', source_points_reg2, renderArgs={'mode':'point'})
             v.addData('knots', knots, renderArgs={'mode':'sphere', 'color':(0,1.0,0), 'scale_factor':2.0})
             v.scene.background=(0,0,0)
-            v.configure_traits()
+            v.start()
         else:
             print('Visualisation error: cannot import mayavi')
 

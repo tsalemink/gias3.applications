@@ -121,7 +121,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
                 v.addTri('registered', reg, renderArgs={'color':(0.3,0.3,1)})
 
             v.scene.background=(0,0,0)
-            v.configure_traits()
+            v.start()
         else:
             print('Visualisation error: cannot import mayavi')
 

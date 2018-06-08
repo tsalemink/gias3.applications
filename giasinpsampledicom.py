@@ -291,7 +291,7 @@ def main():
             v.addData('centroids_img', centroids_img, scalar=E_bin_number, renderArgs={'mode':'point'})
             v.addData('centroids_surf_img', centroids_img[inp_surf_elems_inds], renderArgs={'mode':'point', 'color':(1,1,1)})
             # v.addData('target points_inp', target_points_5[Young > np.min(Young)], scalar = Young[Young > np.min(Young)], renderArgs={'mode':'point', 'vmin':np.min(Young), 'vmax':np.max(Young), 'scale_mode':'none'})
-            v.configure_traits()
+            v.start()
             v.scene.background=(0,0,0)
         else:
             print('Visualisation error: cannot import mayavi')

@@ -264,7 +264,7 @@ def main():
             v.addData('source surface hmf', source_surf_points_hmf, renderArgs={'mode':'point'})
             v.addData('source nodes hmf', source_mesh.nodes, renderArgs={'mode':'point'})
 
-            v.configure_traits()
+            v.start()
             v.scene.background=(0,0,0)
         else:
             print('Visualisation error: cannot import mayavi')

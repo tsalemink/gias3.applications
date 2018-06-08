@@ -253,7 +253,7 @@ def main():
     
     if args.display and can_visual:
         V = fieldvi.Fieldvi()
-        V.configure_traits()
+        V.start()
         V.scene.background=(0,0,0)
         visualise(V, surfTest, surfGT, imgTest, imgGT)
 

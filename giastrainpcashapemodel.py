@@ -165,7 +165,7 @@ def do_pca(args):
                             )
 
             v.scene.background=tuple(args.bgcolour)
-            v.configure_traits()
+            v.start()
         else:
             print('Visualisation error: cannot import mayavi')
 
