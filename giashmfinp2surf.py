@@ -266,6 +266,11 @@ def main():
 
             v.start()
             v.scene.background=(0,0,0)
+
+            if sys.version_info.major==2:
+                ret = raw_input('press any key and enter to exit')
+            else:
+                ret = input('press any key and enter to exit')
         else:
             print('Visualisation error: cannot import mayavi')
 

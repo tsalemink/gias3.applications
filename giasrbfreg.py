@@ -118,6 +118,11 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
             v.addData('knots', knots, renderArgs={'mode':'sphere', 'color':(0,1.0,0), 'scale_factor':2.0})
             v.scene.background=(0,0,0)
             v.start()
+
+            if sys.version_info.major==2:
+                ret = raw_input('press any key and enter to exit')
+            else:
+                ret = input('press any key and enter to exit')
         else:
             print('Visualisation error: cannot import mayavi')
 

@@ -126,6 +126,11 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
             # v.addData('source points reg 2', source_points_reg2, renderArgs={'mode':'point'})
             v.scene.background=(0,0,0)
             v.start()
+
+            if sys.version_info.major==2:
+                ret = raw_input('press any key and enter to exit')
+            else:
+                ret = input('press any key and enter to exit')
         else:
             print('Visualisation error: cannot import mayavi')
 

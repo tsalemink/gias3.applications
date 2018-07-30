@@ -293,6 +293,11 @@ def main():
             # v.addData('target points_inp', target_points_5[Young > np.min(Young)], scalar = Young[Young > np.min(Young)], renderArgs={'mode':'point', 'vmin':np.min(Young), 'vmax':np.max(Young), 'scale_mode':'none'})
             v.start()
             v.scene.background=(0,0,0)
+
+            if sys.version_info.major==2:
+                ret = raw_input('press any key and enter to exit')
+            else:
+                ret = input('press any key and enter to exit')
         else:
             print('Visualisation error: cannot import mayavi')
 
