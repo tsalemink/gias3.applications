@@ -92,9 +92,12 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 
     if out:
         if pts_only:
+            n = np.arange(1,len(reg)+1)
+            _out = np.hstack([n[:,np.newaxis], reg])
             np.savetxt(
-                args.out, reg, delimiter=',',
-                fmt=['%10.6f', '%10.6f', '%10.6f'],
+                out, _out, delimiter=', ',
+                fmt=['%8d', '%10.6f', '%10.6f', '%10.6f'],
+                header='rigid registered points'
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
@@ -135,12 +138,12 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
 def register_pair(args):
     print('{} to {}'.format(args.source,args.target))
     if args.points_only:
-        source = np.loadtxt(args.source)
+        source = np.loadtxt(args.source, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         source = vtktools.loadpoly(args.source)
-    
+
     if args.points_only:
-        target = np.loadtxt(args.target)
+        target = np.loadtxt(args.target, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         target = vtktools.loadpoly(args.target)
     

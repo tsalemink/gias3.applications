@@ -92,12 +92,12 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
 
     if out:
         if pts_only:
-            n = np.arange(1,len(reg))
+            n = np.arange(1,len(reg)+1)
             _out = np.hstack([n[:,np.newaxis], reg])
             np.savetxt(
-                args.out, _out, delimiter=',',
-                fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
-                header='# shape model registered points'
+                out, _out, delimiter=', ',
+                fmt=['%8d', '%10.6f', '%10.6f', '%10.6f'],
+                header='shape model registered points'
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
@@ -141,12 +141,12 @@ def reg_single(args, mean=None, ssm=None):
 
     if mean is None:
         if args.points_only:
-            mean = np.loadtxt(args.mean, skiprows=1, use_cols=(1,2,3))
+            mean = np.loadtxt(args.mean, skiprows=1, usecols=(1,2,3), delimiter=',')
         else:
             mean = vtktools.loadpoly(args.mean)
     
     if args.points_only:
-        target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
+        target = np.loadtxt(args.target, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         target = vtktools.loadpoly(args.target)
 
@@ -167,7 +167,7 @@ def reg_batch(args):
     model_paths = np.loadtxt(args.batch, dtype=str)
 
     if args.points_only:
-        mean = np.loadtxt(args.mean, skiprows=1, use_cols=(1,2,3))
+        mean = np.loadtxt(args.mean, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         mean = vtktools.loadpoly(args.mean)
 

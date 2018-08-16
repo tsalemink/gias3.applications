@@ -39,9 +39,12 @@ def recon_model(x, points_only, templatemesh=None):
 def save_model(x, file, points_only, header=None):
 
     if points_only:
+        n = np.arange(1,len(x)+1)
+        _out = np.hstack([n[:,np.newaxis], x])
         np.savetxt(
-            file, x, delimiter=',',
-            fmt=['%10.6f', '%10.6f', '%10.6f'],
+            file, _out, delimiter=', ',
+            fmt=['%8d', '%10.6f', '%10.6f', '%10.6f'],
+            header=header
             )
     else:
         writer = vtktools.Writer(v=x.v, f=x.f)
@@ -61,7 +64,7 @@ def do_pca(args):
 
     for in_path in paths:
         if args.points_only:
-            x = np.loadtxt(in_path, delimiter=',', skiprows=1)
+            x = np.loadtxt(in_path, delimiter=',', skiprows=1, usecols=(1,2,3))
             models.append(x)
         else:
             model = vtktools.loadpoly(in_path)
@@ -105,8 +108,14 @@ def do_pca(args):
             xr1, xr2 = recon_data(pc, mi, 2.0)
             mr1 = recon_model(xr1, args.points_only, models[0])
             mr2 = recon_model(xr2, args.points_only, models[0])
-            save_model(mr1, args.out+'_recon_pc{}{}'.format(mi, 'p2')+model_ext, args.points_only)
-            save_model(mr2, args.out+'_recon_pc{}{}'.format(mi, 'm2')+model_ext, args.points_only)
+            save_model(
+                mr1, args.out+'_recon_pc{}{}'.format(mi, 'p2')+model_ext,
+                args.points_only, 'recon pc {} {}'.format(mi, '+2sd')
+                )
+            save_model(
+                mr2, args.out+'_recon_pc{}{}'.format(mi, 'm2')+model_ext,
+                args.points_only, 'recon pc {} {}'.format(mi, '-2sd')
+                )
             recon_models.append((mr1, mr2))
 
     # visualise

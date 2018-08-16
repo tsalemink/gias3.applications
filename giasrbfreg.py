@@ -83,12 +83,12 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
 
     if out:
         if pts_only:
-            n = np.arange(1,len(reg))
+            n = np.arange(1,len(reg)+1)
             _out = np.hstack([n[:,np.newaxis], reg])
             np.savetxt(
-                args.out, _out, delimiter=',',
-                fmt=['%6d', '%10.6f', '%10.6f', '%10.6f'],
-                header='# rbf registered points'
+                out, _out, delimiter=', ',
+                fmt=['%8d', '%10.6f', '%10.6f', '%10.6f'],
+                header='rbf registered points'
                 )
         else:
             writer = vtktools.Writer(v=reg.v, f=reg.f)
@@ -177,12 +177,12 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
 def register_n_pass(args):
     print('RBF Registering {} to {}'.format(args.source,args.target))
     if args.points_only:
-        source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
+        source = np.loadtxt(args.source, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         source = vtktools.loadpoly(args.source)
     
     if args.points_only:
-        target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
+        target = np.loadtxt(args.target, skiprows=1, usecols=(1,2,3), delimiter=',')
     else:
         target = vtktools.loadpoly(args.target)
     
