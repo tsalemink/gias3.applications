@@ -199,10 +199,11 @@ def main():
         )
     parser.add_argument(
         'fit_mode',
-        choices=['st', 'ts', 'corr'],
+        choices=['st', 'ts', '2way', 'corr'],
         help='''Registration objective function type. The choices are
-st: minimise distance between each source (mean mesh) point and its closest target point 
-ts: minimise distance between each target point and its closest source (mean mesh) point
+st: minimise distance between each source (mean mesh) point and its closest target point,
+ts: minimise distance between each target point and its closest source (mean mesh) point,
+2way: combination of st and ts modes,
 corr: minimise distance between each ordered pair of source (mean mesh) and target points.  
         '''
         )
