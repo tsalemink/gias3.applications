@@ -62,6 +62,7 @@ def do_pca(args):
     if args.pc_path is not None:
         paths = paths[:1]
 
+    print('loading {} input datasets'.format(len(paths)))
     for in_path in paths:
         if args.points_only:
             x = np.loadtxt(in_path, delimiter=',', skiprows=1, usecols=(1,2,3))
@@ -76,6 +77,9 @@ def do_pca(args):
 
     # do pca
     if args.pc_path is None:
+        if len(X.shape) != 2:
+            raise RuntimeError('Input data shape must be 2D, but is instead {}'.format(X.shape))
+
         pca = PCA.PCA()
         pca.setData(X)
         print('data shape: {}'.format(X.shape))
