@@ -26,6 +26,7 @@ from gias2.mesh import vtktools
 from gias2.registration import alignment_fitting as AF
 
 # import pdb
+log = logging.getLogger(__name__)
 
 reg_methods = {
     'corr_r': AF.fitRigid,
@@ -132,13 +133,13 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
             else:
                 ret = input('press any key and enter to exit')
         else:
-            print('Visualisation error: cannot import mayavi')
+            log.info('Visualisation error: cannot import mayavi')
 
     return reg, RMSE
 
 
 def register_pair(args):
-    print('{} to {}'.format(args.source, args.target))
+    log.info('{} to {}'.format(args.source, args.target))
     if args.points_only:
         source = np.loadtxt(args.source, skiprows=1, usecols=(1, 2, 3), delimiter=',')
     else:

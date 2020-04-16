@@ -27,6 +27,7 @@ from gias2.mesh import vtktools
 from gias2.registration import alignment_fitting as af
 from gias2.registration import shapemodel
 
+log = logging.getLogger(__name__)
 r2c = shapemodel.r2c13
 FTOL = 1e-6
 
@@ -132,13 +133,13 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
             else:
                 ret = input('press any key and enter to exit')
         else:
-            print('Visualisation error: cannot import mayavi')
+            log.info('Visualisation error: cannot import mayavi')
 
     return reg, reg_rms
 
 
 def reg_single(args, mean=None, ssm=None):
-    print('{} to {}'.format(args.mean, args.target))
+    log.info('{} to {}'.format(args.mean, args.target))
 
     if mean is None:
         if args.points_only:

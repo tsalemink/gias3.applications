@@ -27,6 +27,8 @@ from gias2.mesh import vtktools
 from gias2.registration import RBF
 from gias2.registration import alignment_fitting as af
 
+log = logging.getLogger(__name__)
+
 
 def register(source, target, init_rot, pts_only=False, out=None, view=False, **rbfregargs):
     if pts_only:
@@ -124,13 +126,13 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
             else:
                 ret = input('press any key and enter to exit')
         else:
-            print('Visualisation error: cannot import mayavi')
+            log.info('Visualisation error: cannot import mayavi')
 
     return reg, regRms, regRcf
 
 
 # def register_2_pass(args):
-#     print('RBF Registering {} to {}'.format(args.source,args.target))
+#     log.info('RBF Registering {} to {}'.format(args.source,args.target))
 #     if args.points_only:
 #         source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
 #     else:
@@ -176,7 +178,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
 #     return source, target, (reg_1, rms1, rcf1), (reg_2, rms2, rcf2)
 
 def register_n_pass(args):
-    print('RBF Registering {} to {}'.format(args.source, args.target))
+    log.info('RBF Registering {} to {}'.format(args.source, args.target))
     if args.points_only:
         source = np.loadtxt(args.source, skiprows=1, usecols=(1, 2, 3), delimiter=',')
     else:

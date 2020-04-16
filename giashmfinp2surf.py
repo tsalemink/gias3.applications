@@ -42,10 +42,11 @@ python hmf_inp_2_surf.py data/tibia_volume.inp data/tibia_surface.stl data/tibia
 """
 
 import argparse
+import logging
 import os
+import sys
 
 import numpy as np
-import sys
 from scipy.spatial import cKDTree
 
 from gias2.common import transform3D
@@ -55,45 +56,50 @@ from gias2.fieldwork.field.tools import fitting_tools
 from gias2.mesh import vtktools, inp
 from gias2.registration import alignment_fitting as af
 
-parser = argparse.ArgumentParser(
-    description='host-mesh fit an INP mesh to a surface'
-)
-parser.add_argument(
-    'source_volume',
-    help='source INP file to be fitted'
-)
-parser.add_argument(
-    'source_surf',
-    help='surface model file of the source INP file to be fitted'
-)
-parser.add_argument(
-    'target_surf',
-    help='target surface model file to be fitted to'
-)
-parser.add_argument(
-    'output',
-    help='output INP file of the fitted mesh'
-)
-parser.add_argument(
-    '-e', '--elset',
-    default=None,
-    help='The ELSET in the INP file to fit. If not given, the first ELSET will be used.'
-)
-parser.add_argument(
-    '-r', '--rotate',
-    nargs=3, type=float, default=[0, 0, 0],
-    help='Initial Eulerian rotations to apply to the source surface to align it with the target surface. In degrees.'
-)
-parser.add_argument(
-    '--orig-position',
-    action='store_true',
-    help='Return fitted source mesh to original source position'
-)
-parser.add_argument(
-    '-v', '--view',
-    action='store_true',
-    help='view results in mayavi'
-)
+log = logging.getLogger(__name__)
+
+
+def make_parser():
+    parser = argparse.ArgumentParser(
+        description='host-mesh fit an INP mesh to a surface'
+    )
+    parser.add_argument(
+        'source_volume',
+        help='source INP file to be fitted'
+    )
+    parser.add_argument(
+        'source_surf',
+        help='surface model file of the source INP file to be fitted'
+    )
+    parser.add_argument(
+        'target_surf',
+        help='target surface model file to be fitted to'
+    )
+    parser.add_argument(
+        'output',
+        help='output INP file of the fitted mesh'
+    )
+    parser.add_argument(
+        '-e', '--elset',
+        default=None,
+        help='The ELSET in the INP file to fit. If not given, the first ELSET will be used.'
+    )
+    parser.add_argument(
+        '-r', '--rotate',
+        nargs=3, type=float, default=[0, 0, 0],
+        help='Initial Eulerian rotations to apply to the source surface to align it with the target surface. In degrees.'
+    )
+    parser.add_argument(
+        '--orig-position',
+        action='store_true',
+        help='Return fitted source mesh to original source position'
+    )
+    parser.add_argument(
+        '-v', '--view',
+        action='store_true',
+        help='view results in mayavi'
+    )
+    return parser
 
 
 def _load_inp(fname, meshname=None):
@@ -113,6 +119,7 @@ def _load_inp(fname, meshname=None):
 def main():
     # =============================================================================#
     # input arguments
+    parser = make_parser()
     args = parser.parse_args()
 
     # initial rotation to apply to the source model for rigid-body registration
@@ -151,7 +158,7 @@ def main():
         t0=np.array(init_trans + init_rot),
         outputErrors=1
     )
-    print('rigid-body registration error: {}'.format(reg1_errors[1]))
+    log.info('rigid-body registration error: {}'.format(reg1_errors[1]))
     # add isotropic scaling to rigid registration
     reg2_T, source_surf_points_reg2, reg2_errors = af.fitDataRigidScaleDPEP(
         source_surf_points,
@@ -161,7 +168,7 @@ def main():
         t0=np.hstack([reg1_T, 1.0]),
         outputErrors=1
     )
-    print('rigid-body + scaling registration error: {}'.format(reg2_errors[1]))
+    log.info('rigid-body + scaling registration error: {}'.format(reg2_errors[1]))
 
     # apply same transforms to the volume nodes
     source_mesh.nodes = transform3D.transformRigidScale3DAboutP(
@@ -275,7 +282,7 @@ def main():
             else:
                 ret = input('press any key and enter to exit')
         else:
-            print('Visualisation error: cannot import mayavi')
+            log.info('Visualisation error: cannot import mayavi')
 
     # ======================================================================#
     # write out INP file

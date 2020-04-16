@@ -16,6 +16,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
 import copy
+import logging
 from os import path
 
 import numpy as np
@@ -23,6 +24,8 @@ import sys
 
 from gias2.learning import PCA
 from gias2.mesh import vtktools
+
+log = logging.getLogger(__name__)
 
 
 def recon_data(pc, mode, sd):
@@ -66,7 +69,7 @@ def do_pca(args):
     if args.pc_path is not None:
         paths = paths[:1]
 
-    print('loading {} input datasets'.format(len(paths)))
+    log.info('loading {} input datasets'.format(len(paths)))
     for in_path in paths:
         if args.points_only:
             x = np.loadtxt(in_path, delimiter=',', skiprows=1, usecols=(1, 2, 3))
@@ -86,7 +89,7 @@ def do_pca(args):
 
         pca = PCA.PCA()
         pca.setData(X)
-        print('data shape: {}'.format(X.shape))
+        log.info('data shape: {}'.format(X.shape))
 
         if args.ncomponents:
             pca.inc_svd_decompose(args.ncomponents)
@@ -128,10 +131,10 @@ def do_pca(args):
 
     # visualise
     componentVar = pc.getNormSpectrum()
-    print('PC Percentage Significance')
+    log.info('PC Percentage Significance')
     for i in range(args.plot_pcs):
         try:
-            print('pc%d: %4.2f%%' % (i + 1, componentVar[i] * 100))
+            log.info('pc%d: %4.2f%%' % (i + 1, componentVar[i] * 100))
         except IndexError:
             pass
 
@@ -192,7 +195,7 @@ def do_pca(args):
             else:
                 ret = input('press any key and enter to exit')
         else:
-            print('Visualisation error: cannot import mayavi')
+            log.info('Visualisation error: cannot import mayavi')
 
     return pc
 
