@@ -15,6 +15,27 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 import logging
 
+import argparse
+from argparse import RawTextHelpFormatter
+from os import path
+
+import numpy as np
+import sys
+from scipy.spatial import cKDTree
+from scipy.spatial.distance import jaccard, dice, directed_hausdorff
+
+from gias3.mesh import vtktools
+
+log = logging.getLogger(__name__)
+
+try:
+    from gias3.visualisation import fieldvi
+
+    can_visual = True
+except (ImportError, NotImplementedError):
+    log.info('no visualisation available')
+    can_visual = False
+
 _descStr = """Script for calculating the distances between 2 surfaces.
 Author: Ju Zhang
 Last Modified: 2017-08-02
@@ -52,28 +73,6 @@ Things to note
     jaccard: 0.9563085399449036
 
 """
-
-import argparse
-from argparse import RawTextHelpFormatter
-from os import path
-
-import numpy as np
-import sys
-from scipy.spatial import cKDTree
-from scipy.spatial.distance import jaccard, dice, directed_hausdorff
-
-from gias2.mesh import vtktools
-
-log = logging.getLogger(__name__)
-
-try:
-    from gias2.visualisation import fieldvi
-
-    can_visual = True
-except (ImportError, NotImplementedError):
-    log.info('no visualisation available')
-    can_visual = False
-
 
 def dim_unit_scaling(in_unit, out_unit):
     """
@@ -158,23 +157,23 @@ def calcDistance(s1, s2):
     return dmax, drms, dmean, dhaus, (d12, d21)
 
 
-def calcSegmentationErrors(meshFileTest, meshFileGT, jacImgSpacing, gtScaling, testScaling):
+def calcSegmentationErrors(mesh_file_test, mesh_file_gt, jac_img_spacing, gt_scaling, test_scaling):
     # load ground truth segmentation (tri-mesh)
-    surfGT = loadMesh(meshFileGT)
-    surfGT.v *= gtScaling
+    surfGT = loadMesh(mesh_file_gt)
+    surfGT.v *= gt_scaling
 
     # load test segmentation (tri-mesh)
-    surfTest = loadMesh(meshFileTest)
-    surfTest.v *= testScaling
+    surfTest = loadMesh(mesh_file_test)
+    surfTest.v *= test_scaling
 
     # work out volume size
     volMin = np.min([surfGT.v.min(0), surfTest.v.min(0)], axis=0)
     volMax = np.max([surfGT.v.max(0), surfTest.v.max(0)], axis=0)
     imgOrig = volMin - 10.0
-    imgShape = np.ceil(((volMax + 10.0) - imgOrig) / jacImgSpacing).astype(int)
+    imgShape = np.ceil(((volMax + 10.0) - imgOrig) / jac_img_spacing).astype(int)
 
     # calc jaccard coeff
-    jaccard_, dice_, imgGT, imgTest = calcOverlap(surfGT, surfTest, imgOrig, imgShape, jacImgSpacing)
+    jaccard_, dice_, imgGT, imgTest = calcOverlap(surfGT, surfTest, imgOrig, imgShape, jac_img_spacing)
 
     # calc surface to surface distance
     dmax, drms, dmean, dhaus, (d12, d21) = calcDistance(surfGT, surfTest)
@@ -190,13 +189,13 @@ def calcSegmentationErrors(meshFileTest, meshFileGT, jacImgSpacing, gtScaling, t
     return results, surfTest, surfGT, imgTest, imgGT
 
 
-def visualise(V, surfTest, surfGT, imgTest, imgGT):
-    V.addTri('test surface', surfTest, renderArgs={'color': (0.4, 0.4, 0.4)})
+def visualise(V, surf_test, surf_gt, img_test, img_gt):
+    V.addTri('test surface', surf_test, renderArgs={'color': (0.4, 0.4, 0.4)})
     V.updateTriSurface('test surface')
-    V.addTri('ground truth surface', surfGT, renderArgs={'color': (0.84705882, 0.8, 0.49803922)})
+    V.addTri('ground truth surface', surf_gt, renderArgs={'color': (0.84705882, 0.8, 0.49803922)})
     V.updateTriSurface('ground truth surface')
-    V.addImageVolume(imgGT.astype(float), 'groundtruth')
-    V.addImageVolume(imgTest.astype(float), 'test')
+    V.addImageVolume(img_gt.astype(float), 'groundtruth')
+    V.addImageVolume(img_test.astype(float), 'test')
 
 
 def writeResults(filepath, testname, gtname, res):
@@ -265,7 +264,7 @@ def main():
         writeResults(args.outpath, testName, gtName, results)
 
     if args.display and can_visual:
-        V = fieldvi.Fieldvi()
+        V = fieldvi.FieldVi()
         V.start()
         V.scene.background = (0, 0, 0)
         visualise(V, surfTest, surfGT, imgTest, imgGT)

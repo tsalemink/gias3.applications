@@ -22,8 +22,8 @@ from os import path
 import numpy as np
 import sys
 
-from gias2.mesh import vtktools
-from gias2.registration import alignment_fitting as AF
+from gias3.mesh import vtktools
+from gias3.registration import alignment_fitting as AF
 
 # import pdb
 log = logging.getLogger(__name__)
@@ -109,29 +109,26 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
     # view
     if view:
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
+            v = fieldvi.FieldVi()
             if pts_only:
-                v.addData('target points', target_pts, renderArgs={'mode': 'point', 'color': (1, 0, 0)})
-                v.addData('source points', source_pts, renderArgs={'mode': 'point', 'color': (0, 1, 0)})
-                v.addData('registered points', reg, renderArgs={'mode': 'point', 'color': (0.3, 0.3, 1)})
+                v.addData('target points', target_pts, render_args={'mode': 'point', 'color': (1, 0, 0)})
+                v.addData('source points', source_pts, render_args={'mode': 'point', 'color': (0, 1, 0)})
+                v.addData('registered points', reg, render_args={'mode': 'point', 'color': (0.3, 0.3, 1)})
             else:
-                v.addTri('target', target, renderArgs={'color': (1, 0, 0)})
-                v.addTri('source', source, renderArgs={'color': (0, 1, 0)})
-                v.addTri('registered', reg, renderArgs={'color': (0.3, 0.3, 1)})
+                v.addTri('target', target, render_args={'color': (1, 0, 0)})
+                v.addTri('source', source, render_args={'color': (0, 1, 0)})
+                v.addTri('registered', reg, render_args={'color': (0.3, 0.3, 1)})
 
             v.scene.background = (0, 0, 0)
             v.start()
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
+            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

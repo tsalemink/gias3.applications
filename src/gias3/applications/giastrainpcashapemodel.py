@@ -22,8 +22,8 @@ from os import path
 import numpy as np
 import sys
 
-from gias2.learning import PCA
-from gias2.mesh import vtktools
+from gias3.learning import PCA
+from gias3.mesh import vtktools
 
 log = logging.getLogger(__name__)
 

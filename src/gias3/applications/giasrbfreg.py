@@ -23,9 +23,9 @@ from os import path
 import numpy as np
 import sys
 
-from gias2.mesh import vtktools
-from gias2.registration import RBF
-from gias2.registration import alignment_fitting as af
+from gias3.mesh import vtktools
+from gias3.registration import RBF
+from gias3.registration import alignment_fitting as af
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
         xtol=1e-6,
         sample=1000,
         t0=t0,
-        outputErrors=1
+        output_errors=1
     )
 
     # add isotropic scaling to rigid registration
@@ -58,7 +58,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
         xtol=1e-6,
         sample=1000,
         t0=np.hstack([reg1_T, 1.0]),
-        outputErrors=1
+        output_errors=1
     )
 
     # =============================================================#
@@ -121,10 +121,7 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
             v.scene.background = (0, 0, 0)
             v.start()
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
+            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

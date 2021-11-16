@@ -20,12 +20,11 @@ import logging
 from os import path
 
 import numpy as np
-import sys
 
-from gias2.learning import PCA
-from gias2.mesh import vtktools
-from gias2.registration import alignment_fitting as af
-from gias2.registration import shapemodel
+from gias3.learning import PCA
+from gias3.mesh import vtktools
+from gias3.registration import alignment_fitting as af
+from gias3.registration import shapemodel
 
 log = logging.getLogger(__name__)
 r2c = shapemodel.r2c13
@@ -54,7 +53,7 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
             xtol=1e-6,
             sample=1000,
             t0=t0,
-            outputErrors=1
+            output_errors=1
         )
 
         # add isotropic scaling to rigid registration
@@ -65,7 +64,7 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
                 xtol=1e-6,
                 sample=1000,
                 t0=np.hstack([reg1_T, 1.0]),
-                outputErrors=1
+                output_errors=1
             )
         else:
             reg2_T = reg1_T
@@ -108,30 +107,27 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
     # view
     if view:
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
+            v = fieldvi.FieldVi()
             if pts_only:
-                v.addData('target', target, renderArgs={'color': (1, 0, 0)})
-                v.addData('mean', mean_mesh, renderArgs={'color': (0, 1, 0)})
-                v.addData('mean morphed', reg, renderArgs={'color': (0.3, 0.3, 1)})
+                v.addData('target', target, render_args={'color': (1, 0, 0)})
+                v.addData('mean', mean_mesh, render_args={'color': (0, 1, 0)})
+                v.addData('mean morphed', reg, render_args={'color': (0.3, 0.3, 1)})
             else:
-                v.addTri('target', target, renderArgs={'color': (1, 0, 0)})
-                v.addTri('mean', mean_mesh, renderArgs={'color': (0, 1, 0)})
-                v.addTri('mean morphed', reg, renderArgs={'color': (0.3, 0.3, 1)})
+                v.addTri('target', target, render_args={'color': (1, 0, 0)})
+                v.addTri('mean', mean_mesh, render_args={'color': (0, 1, 0)})
+                v.addTri('mean morphed', reg, render_args={'color': (0.3, 0.3, 1)})
 
             # v.addData('source points reg 2', source_points_reg2, renderArgs={'mode':'point'})
             v.scene.background = (0, 0, 0)
             v.start()
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
+            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

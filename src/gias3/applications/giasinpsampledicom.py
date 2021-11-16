@@ -22,16 +22,11 @@ import argparse
 import logging
 import os
 
-import sys
-
-if sys.version_info.major == 2:
-    import ConfigParser as configparser
-else:
-    import configparser
+import configparser
 
 import numpy as np
-from gias2.image_analysis.image_tools import Scan
-from gias2.mesh import inp
+from gias3.image_analysis.image_tools import Scan
+from gias3.mesh import inp
 
 log = logging.getLogger(__name__)
 
@@ -220,7 +215,7 @@ def main():
     s = Scan('scan')
     s._useCoord2IndexMat = True
     s.loadDicomFolder(
-        params.dicom_dir, filter=False, filePattern=params.dicom_pattern, newLoadMethod=True
+        params.dicom_dir, filter_=False, file_pattern=params.dicom_pattern, new_load_method=True
     )
     if args.flipz:
         s.I = s.I[:, :, ::-1]
@@ -229,12 +224,12 @@ def main():
 
     # calculate element centroids
     centroids = inp_mesh.calcElemCentroids()
-    centroids_img = s.coord2Index(centroids, zShift=True, negSpacing=False, roundInt=False)
+    centroids_img = s.coord2Index(centroids, z_shift=True, neg_spacing=False, round_int=False)
     centroids_img += [-1, -1, 0]
 
     # sample image at element centroids - use linear interpolation
     sampled_hu = s.sampleImage(
-        centroids_img, maptoindices=0, outputType=float, order=1,
+        centroids_img, maptoindices=False, output_type=float, order=1,
     )
 
     # Convert HU to Young's Modulus
@@ -292,27 +287,24 @@ def main():
     if args.view:
         os.environ['ETS_TOOLKIT'] = 'qt4'
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
+            v = fieldvi.FieldVi()
             # v.addImageVolume(s.I, 'CT', renderArgs={'vmax':2000, 'vmin':-200})
-            v.addImageVolume(s.I, 'CT', renderArgs={'vmax': params.phantom_hu, 'vmin': params.water_hu})
+            v.addImageVolume(s.I, 'CT', render_args={'vmax': params.phantom_hu, 'vmin': params.water_hu})
             # v.addData('centroids_img', centroids_img, scalar=E, renderArgs={'mode':'point'})
-            v.addData('centroids_img', centroids_img, scalar=E_bin_number, renderArgs={'mode': 'point'})
+            v.addData('centroids_img', centroids_img, scalar=E_bin_number, render_args={'mode': 'point'})
             v.addData('centroids_surf_img', centroids_img[inp_surf_elems_inds],
-                      renderArgs={'mode': 'point', 'color': (1, 1, 1)})
+                      render_args={'mode': 'point', 'color': (1, 1, 1)})
             # v.addData('target points_inp', target_points_5[Young > np.min(Young)], scalar = Young[Young > np.min(Young)], renderArgs={'mode':'point', 'vmin':np.min(Young), 'vmax':np.max(Young), 'scale_mode':'none'})
             v.start()
             v.scene.background = (0, 0, 0)
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
+            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

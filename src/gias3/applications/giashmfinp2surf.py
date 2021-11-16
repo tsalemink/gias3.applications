@@ -49,12 +49,12 @@ import sys
 import numpy as np
 from scipy.spatial import cKDTree
 
-from gias2.common import transform3D
-from gias2.fieldwork.field import geometric_field
-from gias2.fieldwork.field import geometric_field_fitter as GFF
-from gias2.fieldwork.field.tools import fitting_tools
-from gias2.mesh import vtktools, inp
-from gias2.registration import alignment_fitting as af
+from gias3.common import transform3D
+from gias3.fieldwork.field import geometric_field
+from gias3.fieldwork.field import geometric_field_fitter as GFF
+from gias3.fieldwork.field.tools import fitting_tools
+from gias3.mesh import vtktools, inp
+from gias3.registration import alignment_fitting as af
 
 log = logging.getLogger(__name__)
 
@@ -156,7 +156,7 @@ def main():
         xtol=1e-6,
         sample=1000,
         t0=np.array(init_trans + init_rot),
-        outputErrors=1
+        output_errors=1
     )
     log.info('rigid-body registration error: {}'.format(reg1_errors[1]))
     # add isotropic scaling to rigid registration
@@ -166,7 +166,7 @@ def main():
         xtol=1e-6,
         sample=1000,
         t0=np.hstack([reg1_T, 1.0]),
-        outputErrors=1
+        output_errors=1
     )
     log.info('rigid-body + scaling registration error: {}'.format(reg2_errors[1]))
 
@@ -228,7 +228,7 @@ def main():
     )[0]
     # make internal source node coordinate evaluator function
     eval_source_nodes_xi = geometric_field.makeGeometricFieldEvaluatorSparse(
-        host_mesh, [1, 1], matPoints=source_nodes_xi
+        host_mesh, [1, 1], mat_points=source_nodes_xi
     )
 
     # HMF
@@ -260,27 +260,24 @@ def main():
     if args.view:
         os.environ['ETS_TOOLKIT'] = 'qt4'
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
-            v.addData('target surface', target_surf_points, renderArgs={'mode': 'point', 'color': (1, 0, 0)})
-            v.addData('source surface', source_surf_points, renderArgs={'mode': 'point'})
-            v.addData('source surface reg1', source_surf_points_reg1, renderArgs={'mode': 'point'})
-            v.addData('source surface reg2', source_surf_points_reg2, renderArgs={'mode': 'point'})
-            v.addData('source surface hmf', source_surf_points_hmf, renderArgs={'mode': 'point'})
-            v.addData('source nodes hmf', source_mesh.nodes, renderArgs={'mode': 'point'})
+            v = fieldvi.FieldVi()
+            v.addData('target surface', target_surf_points, render_args={'mode': 'point', 'color': (1, 0, 0)})
+            v.addData('source surface', source_surf_points, render_args={'mode': 'point'})
+            v.addData('source surface reg1', source_surf_points_reg1, render_args={'mode': 'point'})
+            v.addData('source surface reg2', source_surf_points_reg2, render_args={'mode': 'point'})
+            v.addData('source surface hmf', source_surf_points_hmf, render_args={'mode': 'point'})
+            v.addData('source nodes hmf', source_mesh.nodes, render_args={'mode': 'point'})
 
             v.start()
             v.scene.background = (0, 0, 0)
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
+            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 
