@@ -123,7 +123,7 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
                 v.addTri('mean', mean_mesh, render_args={'color': (0, 1, 0)})
                 v.addTri('mean morphed', reg, render_args={'color': (0.3, 0.3, 1)})
 
-            # v.addData('source points reg 2', source_points_reg2, renderArgs={'mode':'point'})
+            # v.addData('source points reg 2', source_points_reg2, render_args={'mode':'point'})
             v.scene.background = (0, 0, 0)
             v.start()
 

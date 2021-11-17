@@ -100,24 +100,24 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
     # view
     if view:
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
+            v = fieldvi.FieldVi()
             if pts_only:
-                v.addData('target', target, renderArgs={'color': (1, 0, 0), 'mode': 'point'})
-                v.addData('source', source, renderArgs={'color': (0, 1, 0), 'mode': 'point'})
-                v.addData('source morphed', reg, renderArgs={'color': (0.3, 0.3, 1), 'mode': 'point'})
+                v.addData('target', target, render_args={'color': (1, 0, 0), 'mode': 'point'})
+                v.addData('source', source, render_args={'color': (0, 1, 0), 'mode': 'point'})
+                v.addData('source morphed', reg, render_args={'color': (0.3, 0.3, 1), 'mode': 'point'})
             else:
-                v.addTri('target', target, renderArgs={'color': (1, 0, 0)})
-                v.addTri('source', source, renderArgs={'color': (0, 1, 0)})
-                v.addTri('registered', reg, renderArgs={'color': (0.3, 0.3, 1)})
+                v.addTri('target', target, render_args={'color': (1, 0, 0)})
+                v.addTri('source', source, render_args={'color': (0, 1, 0)})
+                v.addTri('registered', reg, render_args={'color': (0.3, 0.3, 1)})
 
-            v.addData('source points reg 2', source_points_reg2, renderArgs={'mode': 'point'})
-            v.addData('knots', knots, renderArgs={'mode': 'sphere', 'color': (0, 1.0, 0), 'scale_factor': 2.0})
+            v.addData('source points reg 2', source_points_reg2, render_args={'mode': 'point'})
+            v.addData('knots', knots, render_args={'mode': 'sphere', 'color': (0, 1.0, 0), 'scale_factor': 2.0})
             v.scene.background = (0, 0, 0)
             v.start()
 

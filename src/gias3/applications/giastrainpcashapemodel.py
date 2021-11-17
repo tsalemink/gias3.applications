@@ -144,23 +144,23 @@ def do_pca(args):
                             nTailLabels=5)
 
         try:
-            from gias2.visualisation import fieldvi
+            from gias3.visualisation import fieldvi
             has_mayavi = True
         except ImportError:
             has_mayavi = False
 
         if has_mayavi:
-            v = fieldvi.Fieldvi()
+            v = fieldvi.FieldVi()
             v.addPC('principal components', pc)
             if args.points_only:
                 v.addData(
                     'mean', mean_model,
-                    renderArgs={'mode': 'point', 'color': tuple(args.colour)}
+                    render_args={'mode': 'point', 'color': tuple(args.colour)}
                 )
             else:
                 v.addTri(
                     'mean', mean_model,
-                    renderArgs={'color': tuple(args.colour)}
+                    render_args={'color': tuple(args.colour)}
                 )
 
             recon_opa = 0.5
@@ -169,22 +169,22 @@ def do_pca(args):
                     if args.points_only:
                         v.addData(
                             'pc{} +2sd'.format(mi), recon_models[mi][0],
-                            renderArgs={'mode': 'point', 'color': tuple(args.recon_colour_1),
+                            render_args={'mode': 'point', 'color': tuple(args.recon_colour_1),
                                         'opacity': args.recon_opacity}
                         )
                         v.addData(
                             'pc{} -2sd'.format(mi), recon_models[mi][1],
-                            renderArgs={'mode': 'point', 'color': tuple(args.recon_colour_2),
+                            render_args={'mode': 'point', 'color': tuple(args.recon_colour_2),
                                         'opacity': args.recon_opacity}
                         )
                     else:
                         v.addTri(
                             'pc{} +2sd'.format(mi), recon_models[mi][0],
-                            renderArgs={'color': tuple(args.recon_colour_1), 'opacity': args.recon_opacity}
+                            render_args={'color': tuple(args.recon_colour_1), 'opacity': args.recon_opacity}
                         )
                         v.addTri(
                             'pc{} -2sd'.format(mi), recon_models[mi][1],
-                            renderArgs={'color': tuple(args.recon_colour_2), 'opacity': args.recon_opacity}
+                            render_args={'color': tuple(args.recon_colour_2), 'opacity': args.recon_opacity}
                         )
 
             v.scene.background = tuple(args.bgcolour)
