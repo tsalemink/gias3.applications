@@ -128,52 +128,6 @@ def register(source, target, init_rot, pts_only=False, out=None, view=False, **r
     return reg, regRms, regRcf
 
 
-# def register_2_pass(args):
-#     log.info('RBF Registering {} to {}'.format(args.source,args.target))
-#     if args.points_only:
-#         source = np.loadtxt(args.source, skiprows=1, use_cols=(1,2,3))
-#     else:
-#         source = vtktools.loadpoly(args.source)
-
-#     if args.points_only:
-#         target = np.loadtxt(args.target, skiprows=1, use_cols=(1,2,3))
-#     else:
-#         target = vtktools.loadpoly(args.target)
-
-#     init_rot = np.deg2rad((0,0,0))
-
-#     rbfargs1 = {
-#         'basisType': 'gaussianNonUniformWidth',
-#         'basisArgs': {'s':1.0, 'scaling':1000.0},
-#         'distmode': 'alt',
-#         'xtol': 1e-1,
-#         'maxIt': 20,
-#         'maxKnots': 500,
-#         'minKnotDist': 20.0,
-#         'maxKnotsPerIt': 20,
-#     }
-#     reg_1, rms1, rcf1 = register(source, target, init_rot, pts_only=args.points_only,
-#         out=False, view=False, **rbfargs1
-#         )
-
-#     rbfargs2 = {
-#         'basisType': 'gaussianNonUniformWidth',
-#         'basisArgs': {'s':1.0, 'scaling':10.0},
-#         'distmode': 'alt',
-#         'xtol': 1e-3,
-#         'maxIt': 20,
-#         'maxKnots': 1000,
-#         'minKnotDist': 2.5,
-#         'maxKnotsPerIt': 20,
-#     }
-#     reg_2, rms2, rcf2 = register(reg_1, target, init_rot, pts_only=args.points_only,
-#         out=args.out, view=args.view, **rbfargs2
-#         )
-
-#     logging.info('{}, rms: {}'.format(path.split(args.target)[1], rms2))
-
-#     return source, target, (reg_1, rms1, rcf1), (reg_2, rms2, rcf2)
-
 def register_n_pass(args):
     log.info('RBF Registering {} to {}'.format(args.source, args.target))
     if args.points_only:
@@ -213,24 +167,24 @@ def register_n_pass(args):
 # DEFAULT 2 pass parameters
 DEFAULT_PARAMS = [
     {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s': 1.0, 'scaling': 1000.0},
-        'distmode': 'alt',
+        'basis_type': 'gaussianNonUniformWidth',
+        'basis_args': {'s': 1.0, 'scaling': 1000.0},
+        'dist_mode': 'alt',
         'xtol': 1e-1,
-        'maxIt': 20,
-        'maxKnots': 500,
-        'minKnotDist': 20.0,
-        'maxKnotsPerIt': 20,
+        'max_it': 20,
+        'max_knots': 500,
+        'min_knot_dist': 20.0,
+        'max_knots_per_it': 20,
     },
     {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s': 1.0, 'scaling': 10.0},
-        'distmode': 'alt',
+        'basis_type': 'gaussianNonUniformWidth',
+        'basis_args': {'s': 1.0, 'scaling': 10.0},
+        'dist_mode': 'alt',
         'xtol': 1e-3,
-        'maxIt': 20,
-        'maxKnots': 1000,
-        'minKnotDist': 2.5,
-        'maxKnotsPerIt': 20,
+        'max_it': 20,
+        'max_knots': 1000,
+        'min_knot_dist': 2.5,
+        'max_knots_per_it': 20,
     }
 ]
 
@@ -248,17 +202,17 @@ def parse_config(fname):
     for _pass in range(1, n_passes + 1):
         sec = 'pass_{:d}'.format(_pass)
         pass_params = {
-            'basisType': cfg.get(sec, 'basis_type'),
-            'basisArgs': {
+            'basis_type': cfg.get(sec, 'basis_type'),
+            'basis_args': {
                 's': 1.0,
                 'scaling': cfg.getfloat(sec, 'basis_scaling')
             },
-            'distmode': cfg.get(sec, 'dist_mode'),
+            'dist_mode': cfg.get(sec, 'dist_mode'),
             'xtol': cfg.getfloat(sec, 'xtol'),
-            'maxIt': cfg.getint(sec, 'max_it'),
-            'maxKnots': cfg.getint(sec, 'max_knots'),
-            'minKnotDist': cfg.getfloat(sec, 'min_knot_dist'),
-            'maxKnotsPerIt': cfg.getint(sec, 'max_knots_per_it'),
+            'max_it': cfg.getint(sec, 'max_it'),
+            'max_knots': cfg.getint(sec, 'max_knots'),
+            'min_knot_dist': cfg.getfloat(sec, 'min_knot_dist'),
+            'max_knots_per_it': cfg.getint(sec, 'max_knots_per_it'),
         }
         params.append(pass_params)
 
