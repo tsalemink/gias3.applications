@@ -21,6 +21,7 @@ from os import path
 
 import numpy as np
 
+from gias3.applications.general import init_log
 from gias3.learning import PCA
 from gias3.mesh import vtktools
 from gias3.registration import alignment_fitting as af
@@ -265,18 +266,10 @@ line, then n,x,y,z on each line after. UNTESTED'''
     args = parser.parse_args()
 
     # start logging
-    if args.log:
-        log_fmt = '%(levelname)s - %(asctime)s: %(message)s'
-        log_level = logging.INFO
-
-        logging.basicConfig(
-            filename=args.log,
-            level=log_level,
-            format=log_fmt,
-        )
-        logging.info(
-            'Starting shape model registration',
-        )
+    init_log(args.log)
+    log.info(
+        'Starting shape model registration',
+    )
 
     if args.batch is None:
         reg_single(args)
