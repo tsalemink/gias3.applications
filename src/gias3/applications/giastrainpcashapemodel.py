@@ -278,9 +278,7 @@ def main():
 
     # Start logging.
     init_log(args.log)
-    log.info(
-        'Starting PCA',
-    )
+    log.info('Starting PCA')
 
     pc = do_pca(args)
 

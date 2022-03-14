@@ -267,9 +267,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
 
     # start logging
     init_log(args.log)
-    log.info(
-        'Starting shape model registration',
-    )
+    log.info('Starting shape model registration')
 
     if args.batch is None:
         reg_single(args)

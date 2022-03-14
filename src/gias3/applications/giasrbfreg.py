@@ -316,9 +316,7 @@ line, then n,x,y,z on each line after. UNTESTED'''
 
     # start logging
     init_log(args.log)
-    log.info(
-        'Starting RBF registration',
-    )
+    log.info('Starting RBF registration')
 
     if args.batch is None:
         register_n_pass(args)

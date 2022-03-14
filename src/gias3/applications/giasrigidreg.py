@@ -232,9 +232,7 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
 
     # start logging
     init_log(args.log)
-    log.info(
-        'Starting rigid-body registration',
-    )
+    log.info('Starting rigid-body registration')
 
     if args.batch is None:
         register_pair(args)
