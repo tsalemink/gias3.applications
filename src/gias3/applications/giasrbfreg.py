@@ -213,24 +213,24 @@ def register_n_pass(args):
 # DEFAULT 2 pass parameters
 DEFAULT_PARAMS = [
     {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s': 1.0, 'scaling': 1000.0},
-        'distmode': 'alt',
+        'basis_type': 'gaussianNonUniformWidth',
+        'basis_args': {'s': 1.0, 'scaling': 1000.0},
+        'dist_mode': 'alt',
         'xtol': 1e-1,
-        'maxIt': 20,
-        'maxKnots': 500,
-        'minKnotDist': 20.0,
-        'maxKnotsPerIt': 20,
+        'max_it': 20,
+        'max_knots': 500,
+        'min_knot_dist': 20.0,
+        'max_knots_per_it': 20,
     },
     {
-        'basisType': 'gaussianNonUniformWidth',
-        'basisArgs': {'s': 1.0, 'scaling': 10.0},
-        'distmode': 'alt',
+        'basis_type': 'gaussianNonUniformWidth',
+        'basis_args': {'s': 1.0, 'scaling': 10.0},
+        'dist_mode': 'alt',
         'xtol': 1e-3,
-        'maxIt': 20,
-        'maxKnots': 1000,
-        'minKnotDist': 2.5,
-        'maxKnotsPerIt': 20,
+        'max_it': 20,
+        'max_knots': 1000,
+        'min_knot_dist': 2.5,
+        'max_knots_per_it': 20,
     }
 ]
 
