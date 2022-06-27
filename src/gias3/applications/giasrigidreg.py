@@ -76,12 +76,12 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
     _reg = reg_methods[reg_method]
     if x0 is None:
         T, source_pts_reg, (rmse0, RMSE) = _reg(
-            source_pts, target_pts, xtol=xtol, sample=samples, outputErrors=True
+            source_pts, target_pts, xtol=xtol, sample=samples, output_errors=True
         )
     else:
         T, source_pts_reg, (rmse0, RMSE) = _reg(
             source_pts, target_pts, t0=x0, xtol=xtol, sample=samples,
-            outputErrors=True
+            output_errors=True
         )
 
     # =============================================================#
