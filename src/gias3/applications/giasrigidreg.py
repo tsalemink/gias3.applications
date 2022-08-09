@@ -22,6 +22,7 @@ from os import path
 import numpy as np
 import sys
 
+from gias3.applications.general import init_log
 from gias3.mesh import vtktools
 from gias3.registration import alignment_fitting as AF
 
@@ -230,18 +231,8 @@ icp_rs_ts: rigid plus scaling using ICP, target to source distance minimisation
     args = parser.parse_args()
 
     # start logging
-    if args.log:
-        log_fmt = '%(levelname)s - %(asctime)s: %(message)s'
-        log_level = logging.INFO
-
-        logging.basicConfig(
-            filename=args.log,
-            level=log_level,
-            format=log_fmt,
-        )
-        logging.info(
-            'Starting rigid-body registration',
-        )
+    init_log(args.log)
+    log.info('Starting rigid-body registration')
 
     if args.batch is None:
         register_pair(args)

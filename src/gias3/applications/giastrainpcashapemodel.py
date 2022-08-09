@@ -22,6 +22,7 @@ from os import path
 import numpy as np
 import sys
 
+from gias3.applications.general import init_log
 from gias3.learning import PCA
 from gias3.mesh import vtktools
 
@@ -269,7 +270,15 @@ def main():
         default=10,
         help='First n modes to plot.'
     )
+    parser.add_argument(
+        '-l', '--log',
+        help='log file'
+    )
     args = parser.parse_args()
+
+    # Start logging.
+    init_log(args.log)
+    log.info('Starting PCA')
 
     pc = do_pca(args)
 
