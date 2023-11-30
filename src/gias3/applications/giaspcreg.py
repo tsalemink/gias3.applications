@@ -128,7 +128,6 @@ def register(mean_mesh, ssm, target, init_rot, fit_mode, fit_comps,
             v.scene.background = (0, 0, 0)
             v.start()
 
-            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

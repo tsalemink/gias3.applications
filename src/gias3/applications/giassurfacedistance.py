@@ -269,11 +269,6 @@ def main():
         V.scene.background = (0, 0, 0)
         visualise(V, surfTest, surfGT, imgTest, imgGT)
 
-        if sys.version_info.major == 2:
-            ret = raw_input('press any key and enter to exit')
-        else:
-            ret = input('press any key and enter to exit')
-
 
 if __name__ == '__main__':
     main()

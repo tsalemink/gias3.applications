@@ -191,10 +191,6 @@ def do_pca(args):
             v.scene.background = tuple(args.bgcolour)
             v.start()
 
-            if sys.version_info.major == 2:
-                ret = raw_input('press any key and enter to exit')
-            else:
-                ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 

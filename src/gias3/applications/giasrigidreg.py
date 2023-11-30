@@ -129,7 +129,6 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
             v.scene.background = (0, 0, 0)
             v.start()
 
-            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 
