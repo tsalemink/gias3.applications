@@ -304,7 +304,6 @@ def main():
             v.start()
             v.scene.background = (0, 0, 0)
 
-            ret = input('press any key and enter to exit')
         else:
             log.info('Visualisation error: cannot import mayavi')
 
