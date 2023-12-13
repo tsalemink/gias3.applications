@@ -27,4 +27,4 @@ if 'ETS_TOOLKIT' not in os.environ:
 elif os.environ['ETS_TOOLKIT'] != 'qt4':
     log.warning("'ETS_TOOLKIT' environment variable does not match the version required for this module ('qt4')")
 
-__version__ = "3.0.1"
+__version__ = "3.0.2"
