@@ -20,7 +20,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
 import logging
-import os
 
 import configparser
 
@@ -285,7 +284,6 @@ def main():
     # =============================================================#
     # view
     if args.view:
-        os.environ['ETS_TOOLKIT'] = 'qt4'
         try:
             from gias3.visualisation import fieldvi
             has_mayavi = True

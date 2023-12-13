@@ -14,7 +14,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ===============================================================================
 """
 
-import os
 import argparse
 import copy
 import logging
@@ -141,7 +140,6 @@ def do_pca(args):
             pass
 
     if args.view:
-        os.environ['ETS_TOOLKIT'] = 'qt4'
         PCA.plotSpectrum(pc, args.plot_pcs, title='Mode Variance')
         PCA.plotModeScatter(pc, title='Shape space (modes 0 and 1)', pointLabels=[str(i) for i in range(len(models))],
                             nTailLabels=5)

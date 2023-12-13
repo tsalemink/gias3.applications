@@ -43,7 +43,6 @@ python hmf_inp_2_surf.py data/tibia_volume.inp data/tibia_surface.stl data/tibia
 
 import argparse
 import logging
-import os
 import sys
 
 import numpy as np
@@ -258,7 +257,6 @@ def main():
     # =============================================================#
     # view
     if args.view:
-        os.environ['ETS_TOOLKIT'] = 'qt4'
         try:
             from gias3.visualisation import fieldvi
             has_mayavi = True
