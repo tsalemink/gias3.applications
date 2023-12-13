@@ -14,6 +14,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ===============================================================================
 """
 
+import os
 import argparse
 import copy
 import logging
@@ -109,6 +110,7 @@ def register(reg_method, source, target, init_trans, init_rot, init_s,
     # =============================================================#
     # view
     if view:
+        os.environ['ETS_TOOLKIT'] = 'qt4'
         try:
             from gias3.visualisation import fieldvi
             has_mayavi = True

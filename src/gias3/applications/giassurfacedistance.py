@@ -13,6 +13,7 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ===============================================================================
 """
+import os
 import logging
 
 import argparse
@@ -27,6 +28,8 @@ from scipy.spatial.distance import jaccard, dice, directed_hausdorff
 from gias3.mesh import vtktools
 
 log = logging.getLogger(__name__)
+
+os.environ['ETS_TOOLKIT'] = 'qt4'
 
 try:
     from gias3.visualisation import fieldvi
